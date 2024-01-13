@@ -1,9 +1,8 @@
-create table if not exists products
+create table if not exists person
 (
-    product_id varchar(100) primary key,
-    title varchar(200),
-    description varchar(200),
-    price varchar(10),
-    discount varchar(10),
-    discounted_price varchar(10)
+    personId varchar(100) primary key,
+    firstName varchar(200),
+    lastName varchar(200),
+    contact varchar(10),
+    email varchar(100)
 );

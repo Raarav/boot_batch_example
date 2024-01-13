@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
-import com.batch.example.boot_batch_example.model.Product;
+import com.batch.example.boot_batch_example.model.Person;
 
 @Configuration
 public class BatchConfig {
@@ -36,12 +36,12 @@ public class BatchConfig {
     public Step steps(
         JobRepository jobRepository,
         DataSourceTransactionManager transactionManager,
-        FlatFileItemReader<Product> reader,
-        ItemProcessor<Product, Product> processor,
-        ItemWriter<Product> writer
+        FlatFileItemReader<Person> reader,
+        ItemProcessor<Person, Person> processor,
+        ItemWriter<Person> writer
     ){
         return new StepBuilder("JobStep", jobRepository)
-            .<Product, Product>chunk(5, transactionManager)
+            .<Person, Person>chunk(5, transactionManager)
             .reader(reader)
             .processor(processor)
             .writer(writer)
@@ -50,28 +50,28 @@ public class BatchConfig {
 
     // reader 
     @Bean
-    public FlatFileItemReader<Product> reader(){
-        return new FlatFileItemReaderBuilder<Product>()
+    public FlatFileItemReader<Person> reader(){
+        return new FlatFileItemReaderBuilder<Person>()
             .name("itemReader")
             .resource(new ClassPathResource("data.csv"))
             .delimited()
-            .names("productId", "title", "description","price", "discount")
-            .targetType(Product.class)
+            .names("personId", "firstName", "lastName","contact", "email")
+            .targetType(Person.class)
             .build();
     }
 
     // processor
 
     @Bean
-    public ItemProcessor<Product, Product> itemProcessor(){
+    public ItemProcessor<Person, Person> itemProcessor(){
         return new CustomItemProcessor();
     }
 
     // writer 
     @Bean
-    public ItemWriter<Product> itemWriter(DataSource dataSource){
-        return new JdbcBatchItemWriterBuilder<Product>()
-            .sql("insert into products(product_id, title, description, price, discount, discounted_price) values(:productId, :title, :description, :price, :discount, :discountedPrice)")
+    public ItemWriter<Person> itemWriter(DataSource dataSource){
+        return new JdbcBatchItemWriterBuilder<Person>()
+            .sql("insert into person(personId, firstName, lastName, contact, email) values(:personId, :firstName, :lastName, :contact, :email)")
             .dataSource(dataSource)
             .beanMapped()
             .build();
